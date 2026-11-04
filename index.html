@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dyndle</title>
+  <meta name="description" content="A daily guessing game for learning robot dynamics: guess the concept from its attributes.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦾</text></svg>">
+  <link rel="stylesheet" href="vendor/katex/katex.min.css">
+  <script defer src="vendor/katex/katex.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <button class="icon-btn" id="btn-help" title="How to play" aria-label="How to play">?</button>
+    <div class="brand">
+      <h1>Dyn<span>dle</span></h1>
+      <p class="tagline">Guess the robot-dynamics concept</p>
+    </div>
+    <div class="top-right">
+      <button class="icon-btn" id="btn-study" title="Study all concepts" aria-label="Study all concepts">📖</button>
+      <button class="icon-btn" id="btn-stats" title="Statistics" aria-label="Statistics">📊</button>
+    </div>
+  </header>
+
+  <main>
+    <nav class="modes" role="tablist">
+      <button class="mode active" data-mode="daily" role="tab">Daily <span id="daily-no"></span></button>
+      <button class="mode" data-mode="practice" role="tab">Practice ∞</button>
+    </nav>
+
+    <section class="input-area" id="input-area">
+      <div class="search">
+        <input id="guess-input" type="text" autocomplete="off" spellcheck="false"
+               placeholder="Type a concept… e.g. mass matrix, RNEA, Jacobian" aria-label="Guess a concept">
+        <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+      </div>
+      <button id="btn-guess" class="primary">Guess</button>
+    </section>
+
+    <section class="hints" id="hints"></section>
+
+    <div id="win-banner" class="win-banner" hidden></div>
+
+    <section class="board-wrap">
+      <div class="board" id="board">
+        <div class="row head">
+          <div>Concept</div><div>Chapter</div><div>Kind</div><div>Size</div>
+          <div>Depends on</div><div>Properties</div><div>Space</div>
+        </div>
+      </div>
+      <p class="empty" id="empty-msg">No guesses yet. Every concept you guess shows which attributes match the answer. Click a guessed concept to study it.</p>
+    </section>
+  </main>
+
+  <footer>
+    n = number of joints · p = number of dynamic parameters · b = number of base parameters
+  </footer>
+
+  <!-- Modal -->
+  <div class="modal-back" id="modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="close" id="modal-close" aria-label="Close">×</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
