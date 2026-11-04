@@ -19,7 +19,9 @@ The answer's symbol is revealed after 4 guesses and its description after 7. Cli
 
 ## Running
 
-It's a static site with no build step:
+**Easiest:** download [`dyndle.html`](dyndle.html) and double-click it. It's a single self-contained file with all code, data and math fonts inlined, so it works offline and needs no server.
+
+Or serve the source folder (no build step):
 
 ```sh
 python3 -m http.server 8000   # then open http://localhost:8000
@@ -35,6 +37,6 @@ All content lives in [`js/data.js`](js/data.js). Each entry has `chapter`, `kind
 node scripts/validate-data.js
 ```
 
-It checks the vocabularies and makes sure no two concepts have identical attributes, since a player could never tell those apart.
+then rebuild the single-file version with `node scripts/build-single.js`. The validation script checks the vocabularies and makes sure no two concepts have identical attributes, since a player could never tell those apart.
 
 KaTeX 0.16.9 (MIT) is vendored in `vendor/katex/`.
