@@ -209,7 +209,7 @@
   }
   function rowFor(guess, answer, animate, idx) {
     const r = compare(guess, answer);
-    const name = el("div", { class: "cell name", title: "Click to study", onclick: () => openCard(guess) },
+    const name = el("div", { class: "cell name", title: "Click to study", tabindex: "0", role: "button", onclick: () => openCard(guess), onkeydown: (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openCard(guess); } } },
       guess.name, el("span", { class: "sym" }, tex(guess.symbol)));
     const ch = cell(r.chapter.color, el("span", {}, `Ch ${guess.chapter} `, r.chapter.arrow ? el("span", { class: "arrow" }, r.chapter.arrow) : null), CHAPTERS[guess.chapter]);
     const cells = [
@@ -252,7 +252,17 @@
       el("div", { class: `hint ${descOpen ? "open" : ""}` }, el("b", {}, "Description"),
         descOpen ? answer.desc : `unlocks in ${HINT_DESC_AT - n} guess${HINT_DESC_AT - n === 1 ? "" : "es"}`),
     );
-    if (!g.done && n > 0) hints.append(el("button", { class: "hint", style: "cursor:pointer", onclick: giveUp }, "🏳 Give up"));
+    if (!g.done && n > 0) {
+      const btn = el("button", { class: "hint", id: "btn-giveup", style: "cursor:pointer" }, "🏳 Give up");
+      btn.addEventListener("click", () => {
+        if (btn.dataset.armed) return giveUp();
+        btn.dataset.armed = "1";
+        btn.classList.add("confirm");
+        btn.textContent = mode === "daily" ? "Reveal answer? Resets your streak. Click again" : "Reveal answer? Click again";
+        setTimeout(() => { if (btn.isConnected) { delete btn.dataset.armed; btn.classList.remove("confirm"); btn.textContent = "🏳 Give up"; } }, 4000);
+      });
+      hints.append(btn);
+    }
 
     // win/lose banner
     const banner = $("#win-banner");
@@ -275,7 +285,6 @@
   }
 
   function giveUp() {
-    if (!confirm("Reveal the answer? This counts as a loss" + (mode === "daily" ? " and resets your streak." : "."))) return;
     finish(false);
     render();
   }
@@ -303,7 +312,13 @@
       return ["chapter", "kind", "size", "depends", "tags", "space"].map((k) => sq[r[k].color]).join("");
     });
     const text = `Dyndle #${today + 1} 🦾 ${g.won ? g.guesses.length : "X"} guess${g.guesses.length === 1 ? "" : "es"}\n${lines.join("\n")}\n${location.href.split("#")[0]}`;
-    (navigator.clipboard?.writeText(text) || Promise.reject()).then(() => toast("Copied to clipboard"), () => prompt("Copy your result:", text));
+    const fallback = () => {
+      const box = el("textarea", { class: "share-box", readonly: "", id: "share-text" });
+      box.value = text;
+      openModal(el("h2", {}, "Share your result"), el("p", {}, "Copying was blocked here. Select the text below and copy it."), box);
+      box.focus(); box.select();
+    };
+    try { navigator.clipboard.writeText(text).then(() => toast("Result copied"), fallback); } catch { fallback(); }
   }
 
   // ── modals ────────────────────────────────────────────────────────────

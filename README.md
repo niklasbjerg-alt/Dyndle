@@ -21,6 +21,8 @@ The answer's symbol is revealed after 4 guesses and its description after 7. Cli
 
 **Easiest:** download [`dyndle.html`](dyndle.html) and double-click it. It's a single self-contained file with all code, data and math fonts inlined, so it works offline and needs no server.
 
+Or play the hosted version: https://claude.ai/artifact/TBLGpwwAbMAHrTNPRJAvVS (it has to be shared from its Share menu before others can open it).
+
 Or serve the source folder (no build step):
 
 ```sh

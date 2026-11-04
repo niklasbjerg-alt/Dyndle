@@ -1,5 +1,6 @@
 // Bundles the whole game into one self-contained HTML file: dyndle.html
-// Usage: node scripts/build-single.js
+// Usage: node scripts/build-single.js [--artifact <out.html>]
+//   --artifact also writes a fragment without <html>/<head>/<body> wrappers, for hosts that add their own skeleton.
 const fs = require("fs");
 const path = require("path");
 const root = path.join(__dirname, "..");
@@ -21,6 +22,20 @@ let html = read("index.html")
   .replace(/<script src="js\/data.js"><\/script>/, () => `<script>\n${safe(read("js/data.js"))}</script>`)
   .replace(/<script src="js\/game.js"><\/script>/, () => `<script>\n${safe(read("js/game.js"))}</script>`);
 
-if (/(src|href)="(?!data:|https?:|#)[^"]+\.(js|css)"/.test(html)) throw new Error("unbundled local asset left in output");
+if (/(src|href)="(?!data:|https:\/\/fonts\.googleapis\.com|#)[^"]+\.(js|css)"/.test(html)) throw new Error("unbundled local asset left in output");
 fs.writeFileSync(path.join(root, "dyndle.html"), html);
 console.log(`dyndle.html written (${(html.length / 1024).toFixed(0)} KB)`);
+
+const ai = process.argv.indexOf("--artifact");
+if (ai > -1) {
+  const out = process.argv[ai + 1];
+  const frag = html
+    .replace(/<!doctype html>\s*/i, "")
+    .replace(/<html[^>]*>\s*/i, "").replace(/<\/html>\s*$/i, "")
+    .replace(/<head>\s*/i, "").replace(/<\/head>\s*/i, "")
+    .replace(/<body>\s*/i, "").replace(/<\/body>\s*/i, "")
+    .replace(/<meta charset="utf-8">\s*/i, "")
+    .replace(/<meta name="viewport"[^>]*>\s*/i, "");
+  fs.writeFileSync(out, frag);
+  console.log(`artifact fragment written to ${out}`);
+}
